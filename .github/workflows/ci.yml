@@ -1,0 +1,31 @@
+# Ce workflow se déclenche à chaque PR et à chaque push sur main
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # On récupère le code
+      - uses: actions/checkout@v4
+
+      # On installe Node.js 20
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # On installe les dépendances de l'API
+      - name: Installer les dépendances
+        run: npm install --prefix services/api
+
+      # On lance les tests unitaires
+      - name: Lancer les tests
+        run: npm test --prefix services/api
+
+      # On vérifie que le build Docker fonctionne
+      - name: Build Docker
+        run: docker build -t loueunechevre-api .
